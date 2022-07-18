@@ -146,9 +146,9 @@
   "sourceMap": "76:1136:4:-;;;221:2;204:19;;251:9;;245:2;:15;227:33;;284:6;264:26;;500:10:1;492:5;;:18;;;;;;;;;;;;;;;;;;76:1136:4;;;;;;",
   "deployedSourceMap": "76:1136:4:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;432:23;;8:9:-1;5:2;;;30:1;27;20:12;5:2;432:23:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;99:1;94:3;90:11;84:18;80:1;75:3;71:11;64:39;52:2;49:1;45:10;40:15;;8:100;;;12:14;432:23:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;460:46;;8:9:-1;5:2;;;30:1;27;20:12;5:2;460:46:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;987:222;;8:9:-1;5:2;;;30:1;27;20:12;5:2;987:222:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;237:20:1;;8:9:-1;5:2;;;30:1;27;20:12;5:2;237:20:1;;;;;;;;;;;;;;;;;;;;;;;;;;;825:174;;8:9:-1;5:2;;;30:1;27;20:12;5:2;825:174:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;432:23:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;460:46::-;;;;;;;;;;;;;;;;;;;;;;:::o;987:222::-;1090:12;1082:1;1050:16;:28;1067:10;1050:28;;;;;;;;;;;;;;;;:33;1042:42;;;;;;;;1105:25;1124:5;1105:18;:25::i;:::-;1090:40;;1166:3;1156:7;:13;;;;;;;;1146:7;:23;1136:33;;1175:29;1189:5;1196:7;1175:13;:29::i;:::-;987:222;;:::o;237:20:1:-;;;;;;;;;;;;;:::o;825:174::-;645:5;;;;;;;;;;;631:19;;:10;:19;;;623:28;;;;;;;;921:1;901:22;;:8;:22;;;;893:31;;;;;;;;963:8;935:37;;956:5;;;;;;;;;;;935:37;;;;;;;;;;;;986:8;978:5;;:16;;;;;;;;;;;;;;;;;;825:174;:::o;822:161:4:-;885:4;897:9;941:4;924:22;;;;;;;;;;;;;;;36:153:-1;66:2;61:3;58:11;51:19;36:153;;;182:3;176:10;171:3;164:23;98:2;93:3;89:12;82:19;;123:2;118:3;114:12;107:19;;148:2;143:3;139:12;132:19;;36:153;;;274:1;267:3;263:2;259:12;254:3;250:22;246:30;315:4;311:9;305:3;299:10;295:26;356:4;350:3;344:10;340:21;389:7;380;377:20;372:3;365:33;3:399;;;924:22:4;;;;;;;;;;;49:4:-1;39:7;30;26:21;22:32;13:7;6:49;924:22:4;;;914:33;;;;;;;;;;;;;36:153:-1;66:2;61:3;58:11;51:19;36:153;;;182:3;176:10;171:3;164:23;98:2;93:3;89:12;82:19;;123:2;118:3;114:12;107:19;;148:2;143:3;139:12;132:19;;36:153;;;274:1;267:3;263:2;259:12;254:3;250:22;246:30;315:4;311:9;305:3;299:10;295:26;356:4;350:3;344:10;340:21;389:7;380;377:20;372:3;365:33;3:399;;;914:33:4;;;;;;;;;;;;;;;;909:39;;;897:51;;968:10;;961:4;:17;;;;;;;;954:24;;822:161;;;;:::o;557:261::-;620:7;703:1;630:7;643:56;;;;;;;;;650:5;643:56;;;;657:4;643:56;;;;663:1;643:56;;;;;;679:12;;673:3;:18;643:56;;;;;;694:1;643:56;;;;;;697:1;643:56;;;;;630:70;;39:1:-1;33:3;27:10;23:18;57:10;52:3;45:23;79:10;72:17;;0:93;630:70:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:74;620:84;;730:10;710:13;:17;724:2;710:17;;;;;;;;;;;;:30;;;;;;;;;;;;;;;;;;746:16;:28;763:10;746:28;;;;;;;;;;;;;;;;:30;;;;;;;;;;;;;787:26;797:2;801:5;808:4;787:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;99:1;94:3;90:11;84:18;80:1;75:3;71:11;64:39;52:2;49:1;45:10;40:15;;8:100;;;12:14;787:26:4;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;557:261;;;:::o;76:1136::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
   "source": "pragma solidity ^0.4.23;\n\nimport \"./Ownable.sol\";\nimport \"./SafeMath.sol\";\n\ncontract ZombieFactory is Ownable {\n\n  using SafeMath for uint256;\n\n  event NewZombie(uint zombieId, string name, uint dna);\n\n  uint dnaDigits = 16;\n  uint dnaModulus = 10 ** dnaDigits;\n  uint cooldownTime = 1 days;\n\n  struct Zombie {\n    string name;\n    uint dna;\n    uint32 level;\n    uint32 readyTime;\n    uint16 winCount;\n    uint16 lossCount;\n  }\n\n  Zombie[] public zombies;\n\n  mapping (uint => address) public zombieToOwner;\n  mapping (address => uint) ownerZombieCount;\n\n  function _createZombie(string _name, uint _dna) internal {\n    uint id = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime), 0, 0)) - 1;\n    zombieToOwner[id] = msg.sender;\n    ownerZombieCount[msg.sender]++;\n    emit NewZombie(id, _name, _dna);\n  }\n\n  function _generateRandomDna(string _str) private view returns (uint) {\n    uint rand = uint(keccak256(abi.encodePacked(_str)));\n    return rand % dnaModulus;\n  }\n\n  function createRandomZombie(string _name) public {\n    require(ownerZombieCount[msg.sender] == 0);\n    uint randDna = _generateRandomDna(_name);\n    randDna = randDna - randDna % 100;\n    _createZombie(_name, randDna);\n  }\n\n}",
-  "sourcePath": "C:\\Users\\Jelo\\source\\repos\\cryptozombies\\contracts\\ZombieFactory.sol",
+  "sourcePath": "E:\\Solidity\\solidity_cryptozombies\\contracts\\ZombieFactory.sol",
   "ast": {
-    "absolutePath": "/C/Users/Jelo/source/repos/cryptozombies/contracts/ZombieFactory.sol",
+    "absolutePath": "/E:/Solidity/solidity_cryptozombies/contracts/ZombieFactory.sol",
     "exportedSymbols": {
       "ZombieFactory": [
         470
@@ -169,7 +169,7 @@
         "src": "0:24:4"
       },
       {
-        "absolutePath": "/C/Users/Jelo/source/repos/cryptozombies/contracts/Ownable.sol",
+        "absolutePath": "/E:/Solidity/solidity_cryptozombies/contracts/Ownable.sol",
         "file": "./Ownable.sol",
         "id": 316,
         "nodeType": "ImportDirective",
@@ -180,7 +180,7 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/C/Users/Jelo/source/repos/cryptozombies/contracts/SafeMath.sol",
+        "absolutePath": "/E:/Solidity/solidity_cryptozombies/contracts/SafeMath.sol",
         "file": "./SafeMath.sol",
         "id": 317,
         "nodeType": "ImportDirective",
@@ -2283,7 +2283,7 @@
     "src": "0:1212:4"
   },
   "legacyAST": {
-    "absolutePath": "/C/Users/Jelo/source/repos/cryptozombies/contracts/ZombieFactory.sol",
+    "absolutePath": "/E:/Solidity/solidity_cryptozombies/contracts/ZombieFactory.sol",
     "exportedSymbols": {
       "ZombieFactory": [
         470
@@ -2304,7 +2304,7 @@
         "src": "0:24:4"
       },
       {
-        "absolutePath": "/C/Users/Jelo/source/repos/cryptozombies/contracts/Ownable.sol",
+        "absolutePath": "/E:/Solidity/solidity_cryptozombies/contracts/Ownable.sol",
         "file": "./Ownable.sol",
         "id": 316,
         "nodeType": "ImportDirective",
@@ -2315,7 +2315,7 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/C/Users/Jelo/source/repos/cryptozombies/contracts/SafeMath.sol",
+        "absolutePath": "/E:/Solidity/solidity_cryptozombies/contracts/SafeMath.sol",
         "file": "./SafeMath.sol",
         "id": 317,
         "nodeType": "ImportDirective",
@@ -4423,5 +4423,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-06-24T06:24:46.793Z"
+  "updatedAt": "2022-07-18T13:24:46.793Z"
 }

@@ -62,9 +62,9 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.4.23;\n\nimport \"./ZombieFactory.sol\";\n\ncontract KittyInterface {\n  function getKitty(uint256 _id) external view returns (\n    bool isGestating,\n    bool isReady,\n    uint256 cooldownIndex,\n    uint256 nextActionAt,\n    uint256 siringWithId,\n    uint256 birthTime,\n    uint256 matronId,\n    uint256 sireId,\n    uint256 generation,\n    uint256 genes\n  );\n}\n\ncontract ZombieFeeding is ZombieFactory {\n\n  KittyInterface kittyContract;\n\n  modifier onlyOwnerOf(uint _zombieId) {\n    require(msg.sender == zombieToOwner[_zombieId]);\n    _;\n  }\n\n  function setKittyContractAddress(address _address) external onlyOwner {\n    kittyContract = KittyInterface(_address);\n  }\n\n  function _triggerCooldown(Zombie storage _zombie) internal {\n    _zombie.readyTime = uint32(now + cooldownTime);\n  }\n\n  function _isReady(Zombie storage _zombie) internal view returns (bool) {\n      return (_zombie.readyTime <= now);\n  }\n\n  function feedAndMultiply(uint _zombieId, uint _targetDna, string _species) internal onlyOwnerOf(_zombieId) {\n    Zombie storage myZombie = zombies[_zombieId];\n    require(_isReady(myZombie));\n    _targetDna = _targetDna % dnaModulus;\n    uint newDna = (myZombie.dna + _targetDna) / 2;\n    if (keccak256(abi.encodePacked(_species)) == keccak256(\"kitty\")) {\n      newDna = newDna - newDna % 100 + 99;\n    }\n    _createZombie(\"NoName\", newDna);\n    _triggerCooldown(myZombie);\n  }\n\n  function feedOnKitty(uint _zombieId, uint _kittyId) public {\n    uint kittyDna;\n    (,,,,,,,,,kittyDna) = kittyContract.getKitty(_kittyId);\n    feedAndMultiply(_zombieId, kittyDna, \"kitty\");\n  }\n}",
-  "sourcePath": "C:\\Users\\Jelo\\source\\repos\\cryptozombies\\contracts\\ZombieFeeding.sol",
+  "sourcePath": "E:\\Solidity\\solidity_cryptozombies\\contracts\\ZombieFeeding.sol",
   "ast": {
-    "absolutePath": "/C/Users/Jelo/source/repos/cryptozombies/contracts/ZombieFeeding.sol",
+    "absolutePath": "/E:/Solidity/solidity_cryptozombies/contracts/ZombieFeeding.sol",
     "exportedSymbols": {
       "KittyInterface": [
         499
@@ -88,7 +88,7 @@
         "src": "0:24:5"
       },
       {
-        "absolutePath": "/C/Users/Jelo/source/repos/cryptozombies/contracts/ZombieFactory.sol",
+        "absolutePath": "/E:/Solidity/solidity_cryptozombies/contracts/ZombieFactory.sol",
         "file": "./ZombieFactory.sol",
         "id": 473,
         "nodeType": "ImportDirective",
@@ -2582,7 +2582,7 @@
     "src": "0:1601:5"
   },
   "legacyAST": {
-    "absolutePath": "/C/Users/Jelo/source/repos/cryptozombies/contracts/ZombieFeeding.sol",
+    "absolutePath": "/E:/Solidity/solidity_cryptozombies/contracts/ZombieFeeding.sol",
     "exportedSymbols": {
       "KittyInterface": [
         499
@@ -2606,7 +2606,7 @@
         "src": "0:24:5"
       },
       {
-        "absolutePath": "/C/Users/Jelo/source/repos/cryptozombies/contracts/ZombieFactory.sol",
+        "absolutePath": "/E:/Solidity/solidity_cryptozombies/contracts/ZombieFactory.sol",
         "file": "./ZombieFactory.sol",
         "id": 473,
         "nodeType": "ImportDirective",
@@ -5105,5 +5105,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-06-24T06:24:46.789Z"
+  "updatedAt": "2022-07-18T13:24:46.789Z"
 }

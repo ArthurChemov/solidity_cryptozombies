@@ -25,12 +25,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jeloooooo/solidity-cryptozombies.git"
+    "url": "git+https://github.com/ArthurChemov/solidity_cryptozombies.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jeloooooo/solidity-cryptozombies/issues"
+    "url": "https://github.com/ArthurChemov/solidity_cryptozombies/issues"
   },
-  "homepage": "https://github.com/jeloooooo/solidity-cryptozombies#readme"
+  "homepage": "https://github.com/ArthurChemov/solidity_cryptozombies#readme"
 }

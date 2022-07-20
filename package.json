@@ -1,7 +1,7 @@
 {
   "name": "cryptozombies",
   "version": "1.0.0",
-  "description": "Cryptozombies.io smart-contract tutorial made compatible with Truffle.",
+  "description": "Cryptozombies.io smart-contract made with Truffle.",
   "directories": {
     "test": "test"
   },

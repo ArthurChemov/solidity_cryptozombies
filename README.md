@@ -1,5 +1,5 @@
 # CryptoZombies
-[CryptoZombies](https://cryptozombies.io) smart-contract tutorial made compatible with [Truffle](http://truffleframework.com).
+[CryptoZombies](https://cryptozombies.io) smart-contract made with [Truffle](http://truffleframework.com).
 
 ### Tools
 * [Visual Studio Code](https://code.visualstudio.com/) - the G.O.A.T source code editor
